@@ -15,11 +15,12 @@
 
 from pyrogram import Client, __version__
 from pyrogram.enums import ParseMode
-from .get_config import get_config
+
+from .config import get_config
 
 
 class Uploadgram(Client):
-    """ modded client """
+    """modded client"""
 
     def __init__(self):
         super().__init__(
@@ -28,7 +29,7 @@ class Uploadgram(Client):
             api_hash=get_config("UG_TG_API_HASH"),
             parse_mode=ParseMode.HTML,
             sleep_threshold=int(get_config("UG_TG_ST", 10)),
-            no_updates=True
+            no_updates=True,
         )
 
     async def start(self):

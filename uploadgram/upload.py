@@ -14,15 +14,18 @@
 
 
 import os
-from time import time
+
 from asyncio import sleep
-from tqdm import tqdm
+from time import time
+
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
 from pyrogram.types import Message
+from tqdm import tqdm
+
 from .config import TG_AUDIO_TYPES, TG_VIDEO_TYPES
 from .progress import progress_for_pyrogram
-from .take_screen_shot import take_screen_shot
+from .utils import take_screen_shot
 
 
 async def upload_dir_contents(

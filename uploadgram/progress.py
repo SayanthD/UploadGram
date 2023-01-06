@@ -16,12 +16,14 @@
 
 
 import math
+
 from asyncio import sleep
+from time import time
+
 from pyrogram.errors import FloodWait
 from pyrogram.types import Message
-from time import time
-from .humanbytes import humanbytes
-from .time_formatter import time_formatter
+
+from .utils import humanbytes, time_formatter
 
 
 async def progress_for_pyrogram(

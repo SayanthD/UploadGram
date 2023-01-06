@@ -14,29 +14,55 @@
 
 
 import os
+
 from dotenv import load_dotenv
-from .get_config import get_config
 
 
 BASE_DIR = os.path.expanduser("~/.config/uploadgram/")
 OLD_CONFIG_FILE = os.path.join(BASE_DIR, "config.ini")
-if os.path.exists(
-    OLD_CONFIG_FILE
-):
+if os.path.exists(OLD_CONFIG_FILE):
     os.remove(OLD_CONFIG_FILE)
 CONFIG_FILE = os.path.join(BASE_DIR, "config.env")
 SESSION_FILE = os.path.join(BASE_DIR, "default")
 TG_VIDEO_TYPES = (
-    "M4V", "MP4", "MOV", "FLV", "WMV", "3GP", "MPEG", "WEBM", "MKV"
+    "M4V",
+    "MP4",
+    "MOV",
+    "FLV",
+    "WMV",
+    "3GP",
+    "MPEG",
+    "WEBM",
+    "MKV",
 )
 TG_AUDIO_TYPES = (
-    "MP3", "M4A", "M4B", "FLAC", "WAV", "AIF", "OGG", "AAC", "DTS"
+    "MP3",
+    "M4A",
+    "M4B",
+    "FLAC",
+    "WAV",
+    "AIF",
+    "OGG",
+    "AAC",
+    "DTS",
 )
+
+
+def get_config(name: str, d_v=None, should_prompt=False):
+    """accepts one mandatory variable
+    and prompts for the value, if not available"""
+    val = os.environ.get(name, d_v)
+    if not val and should_prompt:
+        try:
+            val = input(f"enter {name}'s value: ")
+        except EOFError:
+            val = d_v
+        print("\n")
+    return val
 
 
 def write_default_config():
-    """ write the default config.ini file
-    """
+    """write the default config.ini file"""
     if os.path.lexists(CONFIG_FILE):
         return load_dotenv(CONFIG_FILE)
     os.makedirs(BASE_DIR, exist_ok=True)
