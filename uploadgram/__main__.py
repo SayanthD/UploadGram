@@ -13,7 +13,7 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-import os
+# import os
 from typing import Union
 
 from .upload import upload_dir_contents
@@ -28,6 +28,7 @@ async def _main(
     force_document: bool = False,
     custom_caption: str = None,
     console_progress: bool = False,
+    sleep_timeout: int = 10,
 ):
     uploadgram = Uploadgram()
     await uploadgram.start()
@@ -51,6 +52,7 @@ async def _main(
         custom_caption,
         status_message,
         console_progress,
+        sleep_timeout,
     )
 
     await status_message.delete()
@@ -113,8 +115,18 @@ def main():
         help="show upload progress in terminal",
         required=False,
     )
+    parser.add_argument(
+        "-s",
+        "--sleep",
+        nargs="?",
+        type=int,
+        default=10,
+        help="sleep timeout in seconds",
+        required=False,
+    )
     args = parser.parse_args()
 
+    """
     destination_chat = args.chat_id
     while not destination_chat:
         destination_chat = input("enter chat_id to send the files to: ")
@@ -131,16 +143,18 @@ def main():
         print(os.listdir(os.getcwd()))
         dir_path = input("please enter valid path to upload to Telegram: ")
     dir_path = os.path.abspath(dir_path)
+    """
 
     asyncio.run(
         _main(
-            dir_path=dir_path,
-            destination_chat=destination_chat,
+            dir_path=args.dir_path,
+            destination_chat=args.chat_id,
             delete_on_success=args.delete_on_success,
             thumbnail_file=args.thumb,
             force_document=args.force_doc,
             custom_caption=args.caption,
             console_progress=args.progress,
+            sleep_timeout=args.sleep,
         )
     )
 

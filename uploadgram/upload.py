@@ -37,6 +37,7 @@ async def upload_dir_contents(
     custom_caption: str,
     bot_sent_message: Message,
     console_progress: bool,
+    sleep_timeout: int,
 ):
     dir_contents = []
     if not os.path.isdir(dir_path):
@@ -60,6 +61,7 @@ async def upload_dir_contents(
                 custom_caption,
                 bot_sent_message,
                 console_progress,
+                sleep_timeout
             )
 
         elif os.stat(current_name).st_size <= tg_max_file_size:
@@ -74,7 +76,7 @@ async def upload_dir_contents(
             if isinstance(response_message, Message) and delete_on_success:
                 os.remove(current_name)
 
-        await sleep(10)
+        await sleep(sleep_timeout)
 
 
 async def upload_single_file(
