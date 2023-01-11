@@ -14,6 +14,7 @@
 
 
 import os
+import re
 
 from asyncio import sleep
 from time import time
@@ -47,7 +48,14 @@ async def upload_dir_contents(
             return False
     else:
         dir_contents = os.listdir(dir_path)
-    dir_contents.sort()
+
+    # https://stackoverflow.com/a/16090640
+    _regex = re.compile(r"(\d+)")
+    sort_key = lambda _items: [
+            int(_item) if _item.isdigit() else _item.lower()
+            for _item in _regex.split(_items)
+    ]
+    dir_contents.sort(key=sort_key)
     for dir_cntn in dir_contents:
         current_name = os.path.join(dir_path, dir_cntn)
 
