@@ -126,16 +126,10 @@ def main():
     )
     args = parser.parse_args()
 
-    """
     destination_chat = args.chat_id
-    while not destination_chat:
-        destination_chat = input("enter chat_id to send the files to: ")
-        if not destination_chat.isnumeric() or not destination_chat.startswith(
-            "-100"
-        ):
-            continue
-    destination_chat = int(destination_chat)
-
+    if (destination_chat.isnumeric() or destination_chat.startswith("-100")):
+        destination_chat = int(destination_chat)
+    """
     dir_path = args.dir_path
     if not dir_path:
         dir_path = input("enter path to upload to Telegram: ")
@@ -148,7 +142,7 @@ def main():
     asyncio.run(
         _main(
             dir_path=args.dir_path,
-            destination_chat=args.chat_id,
+            destination_chat=destination_chat,
             delete_on_success=args.delete_on_success,
             thumbnail_file=args.thumb,
             force_document=args.force_doc,
