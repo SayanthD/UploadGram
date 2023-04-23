@@ -27,10 +27,10 @@ classifiers = [
 [tool.poetry.dependencies]
 python = ">=3.7.7,<4"
 python-dotenv = "0.10"
-Pyrogram = "2.0.35"
-TgCrypto = "1.2.3"
-hachoir = "3.1.1"
-tqdm = "4.62.3"
+Pyrogram = "2.0.104"
+TgCrypto = "1.2.5"
+hachoir = "3.2.0"
+tqdm = "4.65.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
