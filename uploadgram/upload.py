@@ -56,7 +56,9 @@ async def upload_dir_contents(
             for _item in _regex.split(_items)
     ]
     dir_contents.sort(key=sort_key)
-    for dir_cntn in dir_contents:
+    _dir_len = len(dir_contents)
+    print(f"No of Contents: {_dir_len}")
+    for idx, dir_cntn in enumerate(dir_contents, start=1):
         current_name = os.path.join(dir_path, dir_cntn)
 
         if os.path.isdir(current_name):
@@ -80,6 +82,8 @@ async def upload_dir_contents(
                 custom_caption,
                 bot_sent_message,
                 console_progress,
+                idx,
+                _dir_len,
             )
             if isinstance(response_message, Message) and delete_on_success:
                 os.remove(current_name)
@@ -94,13 +98,16 @@ async def upload_single_file(
     custom_caption: str,
     bot_sent_message: Message,
     console_progress: bool,
+    idx,
+    _dir_len,
 ):
     if not os.path.exists(file_path):
         return False
     usr_sent_message = bot_sent_message
     start_time = time()
     b_asen_am_e = os.path.basename(file_path)
-    caption_al_desc = f"<code>{b_asen_am_e}</code>"
+    dirname = os.path.dirname(file_path)
+    caption_al_desc = f"<code>{dirname} / {b_asen_am_e}</code>"
     if custom_caption:
         caption_al_desc = custom_caption
 
@@ -115,6 +122,8 @@ async def upload_single_file(
             unit_divisor=1024,
             miniters=1,
         )
+    
+    print(f"[{idx} / {_dir_len}]")
 
     if file_path.upper().endswith(TG_VIDEO_TYPES) and not force_document:
         return await upload_as_video(
