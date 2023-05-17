@@ -223,6 +223,7 @@ async def upload_as_video(
         if metadata and metadata.has("height"):
             height = metadata.get("height")
     except AssertionError:
+        print(file_path)
         pass
     _tmp_m = await usr_sent_message.reply_video(
         video=file_path,
