@@ -57,7 +57,7 @@ async def upload_dir_contents(
     ]
     dir_contents.sort(key=sort_key)
     _dir_len = len(dir_contents)
-    print(f"No of Contents: {_dir_len}")
+    print(f"No of Contents on {os.path.basename(dir_path)}: {_dir_len}")
     for idx, dir_cntn in enumerate(dir_contents, start=1):
         current_name = os.path.join(dir_path, dir_cntn)
 
