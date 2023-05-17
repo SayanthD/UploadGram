@@ -106,7 +106,7 @@ async def upload_single_file(
     usr_sent_message = bot_sent_message
     start_time = time()
     b_asen_am_e = os.path.basename(file_path)
-    dirname = os.path.dirname(file_path)
+    dirname = os.path.basename(os.path.dirname(file_path))
     caption_al_desc = f"<code>{dirname} / {b_asen_am_e}</code>"
     if custom_caption:
         caption_al_desc = custom_caption
