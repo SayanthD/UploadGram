@@ -14,7 +14,7 @@
 
 
 from pyrogram import Client, __version__
-from pyrogram.enums import ParseMode
+from pyrogram.enums import ParseMode, ClientPlatform
 
 from .config import get_config
 
@@ -29,7 +29,16 @@ class Uploadgram(Client):
             api_hash=get_config("UG_TG_API_HASH"),
             parse_mode=ParseMode.HTML,
             sleep_threshold=int(get_config("UG_TG_ST", 10)),
+            workers=10,
+            max_concurrent_transmissions=4,
             no_updates=True,
+            device_model="Samsung SM-G998B",
+            app_version="8.4.1 (2522)",
+            system_version="SDK 31",
+            lang_pack="",
+            lang_code="en",
+            system_lang_code="en",
+            client_platform=ClientPlatform.ANDROID
         )
 
     async def start(self):
