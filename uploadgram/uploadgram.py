@@ -35,9 +35,7 @@ class Uploadgram(Client):
             device_model="Samsung SM-G998B",
             app_version="8.4.1 (2522)",
             system_version="SDK 31",
-            lang_pack="",
             lang_code="en",
-            system_lang_code="en",
             client_platform=ClientPlatform.ANDROID
         )
 
