@@ -15,6 +15,7 @@
 
 import os
 import re
+import shutil
 
 from asyncio import sleep
 from time import time
@@ -59,8 +60,16 @@ async def upload_dir_contents(
     _dir_len = len(dir_contents)
     print(f"No of Contents on {os.path.basename(dir_path)}: {_dir_len}")
     for idx, dir_cntn in enumerate(dir_contents, start=1):
+        if _dir_len == 0:
+            print("Skipping and removing empty directory")
+            try:
+                shutil.rmtree(dir_path)
+            except Exception as err:
+                print(err)
+                
+            continue
+            
         current_name = os.path.join(dir_path, dir_cntn)
-
         if os.path.isdir(current_name):
             await upload_dir_contents(
                 tg_max_file_size,
@@ -194,19 +203,21 @@ async def upload_as_video(
     start_time: int,
     pbar: tqdm,
 ):
+    width = height = 0
     try:
         metadata = extractMetadata(createParser(file_path))
         duration = 0
-        width = 0
-        height = 0
         if metadata and metadata.has("duration"):
             duration = metadata.get("duration").seconds
-        thumb_nail_img = await take_screen_shot(
+        try:
+            thumb_nail_img = await take_screen_shot(
             file_path,
             os.path.dirname(os.path.abspath(file_path)),
             (duration / 2),
-        )
-    except Exception:
+            )
+        except:
+            thumb_nail_img = None
+    except:
         return await upload_as_document(
             usr_sent_message,
             bot_sent_message,
@@ -222,7 +233,7 @@ async def upload_as_video(
             width = metadata.get("width")
         if metadata and metadata.has("height"):
             height = metadata.get("height")
-    except AssertionError:
+    except:
         print(file_path)
         pass
     _tmp_m = await usr_sent_message.reply_video(
