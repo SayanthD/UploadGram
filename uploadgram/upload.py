@@ -131,8 +131,9 @@ async def upload_single_file(
             unit_divisor=1024,
             miniters=1,
         )
-    
-    print(f"[{idx} / {_dir_len}]")
+
+    current_progress = f"[{idx} / {_dir_len}]"
+    print(current_progress)
 
     if file_path.upper().endswith(TG_VIDEO_TYPES) and not force_document:
         return await upload_as_video(
@@ -143,6 +144,7 @@ async def upload_single_file(
             thumbnail_file,
             start_time,
             pbar,
+            current_progress,
         )
 
     elif file_path.upper().endswith(TG_AUDIO_TYPES) and not force_document:
@@ -154,6 +156,7 @@ async def upload_single_file(
             thumbnail_file,
             start_time,
             pbar,
+            current_progress,
         )
 
     else:
@@ -165,6 +168,7 @@ async def upload_single_file(
             thumbnail_file,
             start_time,
             pbar,
+            current_progress,
         )
 
 
@@ -176,6 +180,7 @@ async def upload_as_document(
     thumbnail_file: str,
     start_time: int,
     pbar: tqdm,
+    current_progress: str,
 ):
 
     return await usr_sent_message._client.send_document(
@@ -189,7 +194,7 @@ async def upload_as_document(
             bot_sent_message,
             start_time,
             pbar,
-            "UpLoading to Telegram",
+            f"{current_progress}\nUpLoading to Telegram",
         ),
     )
 
@@ -202,6 +207,7 @@ async def upload_as_video(
     thumbnail_file: str,
     start_time: int,
     pbar: tqdm,
+    current_progress: str,
 ):
     width = height = 0
     try:
@@ -226,6 +232,7 @@ async def upload_as_video(
             thumbnail_file,
             start_time,
             pbar,
+            current_progress,
         )
     try:
         metadata = extractMetadata(createParser(thumb_nail_img))
@@ -250,7 +257,7 @@ async def upload_as_video(
             bot_sent_message,
             start_time,
             pbar,
-            "UpLoading to Telegram",
+            f"{current_progress}\nUpLoading to Telegram",
         ),
     )
     if thumb_nail_img and os.path.exists(thumb_nail_img):
@@ -266,6 +273,7 @@ async def upload_as_audio(
     thumbnail_file: str,
     start_time: int,
     pbar: tqdm,
+    current_progress: str,
 ):
     metadata = extractMetadata(createParser(file_path))
     duration = 0
@@ -301,6 +309,6 @@ async def upload_as_audio(
             bot_sent_message,
             start_time,
             pbar,
-            "UpLoading to Telegram",
+            f"{current_progress}\nUpLoading to Telegram",
         ),
     )
