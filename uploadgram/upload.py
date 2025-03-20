@@ -206,7 +206,7 @@ async def upload_as_video(
             os.path.dirname(os.path.abspath(file_path)),
             (duration / 2),
         )
-    except AssertionError:
+    except Exception:
         return await upload_as_document(
             usr_sent_message,
             bot_sent_message,
