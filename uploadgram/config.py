@@ -46,6 +46,11 @@ TG_AUDIO_TYPES = (
     "AAC",
     "DTS",
 )
+TG_PHOTO_TYPES = (
+    "JPEG",
+    "JPG",
+    "PNG",
+)
 
 
 def get_config(name: str, d_v=None, should_prompt=False):
