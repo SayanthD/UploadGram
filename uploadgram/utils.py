@@ -15,7 +15,7 @@
 
 import asyncio
 import os
-
+import math
 from time import time
 from typing import List, Tuple
 
@@ -23,37 +23,48 @@ from .config import TG_VIDEO_TYPES
 
 
 def humanbytes(size: int) -> str:
-    """converts integer to string"""
-    # https://stackoverflow.com/a/49361727/4723940
-    # 2**10 = 1024
-    if not size:
-        return "NaN"
-    power = 2**10
-    n = 0
-    Dic_powerN = {0: " ", 1: "Ki", 2: "Mi", 3: "Gi", 4: "Ti"}
-    while size > power:
-        size /= power
-        n += 1
-    return f"{str(round(size, 2))} {Dic_powerN[n]}B"
+    """Converts an integer size (in bytes) to a human-readable format."""
+    if size < 0:
+        return "Invalid size"
+    if size == 0:
+        return "0 B"
+
+    # Define units
+    units = ["B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"]
+
+    # Calculate the appropriate unit using logarithms for efficiency
+    n = min(int(math.log(size, 1024)), len(units) - 1)
+    
+    # Perform the size conversion
+    human_readable_size = size / (1024 ** n)
+    
+    # Return formatted result
+    return f"{human_readable_size:.2f} {units[n]}"
+
 
 
 def time_formatter(seconds: int) -> str:
-    """converts integer to string"""
-    result = ""
-    v_m = 0
-    remainder = seconds
-    r_ange_s = {
-        "days": (24 * 60 * 60),
-        "hours": (60 * 60),
-        "minutes": 60,
-        "seconds": 1,
-    }
-    for age, divisor in r_ange_s.items():
-        v_m, remainder = divmod(remainder, divisor)
-        v_m = int(v_m)
-        if v_m != 0:
-            result += f" {v_m} {age} "
-    return result
+    """Converts an integer representing seconds into a human-readable format."""
+    if seconds < 0:
+        return "Invalid time"
+    if seconds == 0:
+        return "0 seconds"
+
+    # Time units in descending order
+    time_units = (
+        ("day", 86400),
+        ("hour", 3600),
+        ("minute", 60),
+        ("second", 1),
+    )
+
+    result = []
+    for unit, divisor in time_units:
+        value, seconds = divmod(seconds, divisor)
+        if value:
+            result.append(f"{value} {unit}{'s' if value > 1 else ''}")
+
+    return " ".join(result)
 
 
 async def run_command(shell_command: List) -> Tuple[int, int, str, str]:
