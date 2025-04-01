@@ -16,7 +16,6 @@
 
 
 import math
-
 from asyncio import sleep
 from time import time
 
@@ -34,46 +33,48 @@ async def progress_for_pyrogram(
     pbar: bool,
     ud_type: str,
 ):
+    """Tracks upload/download progress and updates the message periodically."""
+
     now = time()
-    diff = now - sfw
+    if not sfw:
+        return  # Prevents division errors
+
+    elapsed = now - sfw
+    if elapsed == 0:
+        return  # Avoid zero-division errors
+
     if pbar is not None:
         pbar.update((current / total) * 1024 * 1024)
         if current == total:
-            pbar.set_description("uploaded")
-    else:
-        if round(diff % 10.00) == 0 or current == total:
-            # if round(current / total * 100, 0) % 5 == 0:
-            try:
-                percentage = current * 100 / total
-            except ZeroDivisionError:
-                percentage = 0
-            elapsed_time = round(diff)
-            if elapsed_time == 0:
-                return
-            speed = current / elapsed_time
-            time_to_completion = round((total - current) / speed)
-            estimated_total_time = elapsed_time + time_to_completion
+            pbar.set_description("Uploaded")
+        return
 
-            elapsed_time = time_formatter(elapsed_time)
-            estimated_total_time = time_formatter(estimated_total_time)
+    if int(elapsed) % 10 != 0 and current != total:
+        return  # Updates every 10 seconds or when complete
 
-            progress = "[{0}{1}] \nP: {2}%\n".format(
-                "".join(["█" for _ in range(math.floor(percentage / 5))]),
-                "".join(["░" for _ in range(20 - math.floor(percentage / 5))]),
-                round(percentage, 2),
-            )
+    try:
+        percentage = (current / total) * 100 if total else 0
+        speed = current / elapsed if elapsed > 0 else 0
+        time_remaining = (total - current) / speed if speed > 0 else 0
+    except ZeroDivisionError:
+        percentage, speed, time_remaining = 0, 0, 0
 
-            tmp = progress + "{0} of {1}\nSpeed: {2}/s\nETA: {3}\n".format(
-                humanbytes(current),
-                humanbytes(total),
-                humanbytes(speed),
-                estimated_total_time
-                if estimated_total_time != ""
-                else "0 seconds",
-            )
-            try:
-                await message.edit_text(text="{}\n {}".format(ud_type, tmp))
-            except FloodWait as e:
-                await sleep(e.value)
-            except:  # noqa: E722
-                pass
+    progress_bar = "{0}{1}".format(
+        "█" * (math.floor(percentage / 5)),
+        "░" * (20 - math.floor(percentage / 5)),
+    )
+
+    progress_text = (
+        f"[{progress_bar}] \n"
+        f"P: {round(percentage, 2)}%\n"
+        f"{humanbytes(current)} of {humanbytes(total)}\n"
+        f"Speed: {humanbytes(speed)}/s\n"
+        f"ETA: {time_formatter(round(time_remaining)) if time_remaining else '0 seconds'}\n"
+    )
+
+    try:
+        await message.edit_text(f"{ud_type}\n{progress_text}")
+    except FloodWait as e:
+        await sleep(e.value)  # Ensures we wait out Telegram’s flood control
+    except Exception:
+        pass  # Silently ignore other errors
