@@ -25,7 +25,7 @@ from hachoir.parser import createParser
 from pyrogram.types import Message
 from tqdm import tqdm
 
-from .config import TG_AUDIO_TYPES, TG_VIDEO_TYPES
+from .config import TG_AUDIO_TYPES, TG_VIDEO_TYPES, TG_PHOTO_TYPES
 from .progress import progress_for_pyrogram
 from .utils import take_screen_shot
 
@@ -159,6 +159,18 @@ async def upload_single_file(
             current_progress,
         )
 
+    elif file_path.upper().endswith(TG_PHOTO_TYPES) and not force_document:
+        return await upload_as_photo(
+            usr_sent_message,
+            bot_sent_message,
+            file_path,
+            caption_al_desc,
+            thumbnail_file,
+            start_time,
+            pbar,
+            current_progress,
+        )
+
     else:
         return await upload_as_document(
             usr_sent_message,
@@ -170,6 +182,46 @@ async def upload_single_file(
             pbar,
             current_progress,
         )
+
+async def upload_as_photo(
+    usr_sent_message: Message,
+    bot_sent_message: Message,
+    file_path: str,
+    caption_rts: str,
+    thumbnail_file: str,
+    start_time: int,
+    pbar: tqdm,
+    current_progress: str,
+):
+
+    try:
+        return await usr_sent_message._client.send_photo(
+            chat_id=usr_sent_message.chat.id,
+            document=file_path,
+            caption=caption_rts,
+            progress=progress_for_pyrogram,
+            progress_args=(
+                bot_sent_message,
+                start_time,
+                pbar,
+                f"{current_progress}\nUpLoading to Telegram",
+            ),
+        )
+    except:
+        return await usr_sent_message._client.send_document(
+        chat_id=usr_sent_message.chat.id,
+        document=file_path,
+        caption=caption_rts,
+        force_document=True,
+        thumb=thumbnail_file,
+        progress=progress_for_pyrogram,
+        progress_args=(
+            bot_sent_message,
+            start_time,
+            pbar,
+            f"{current_progress}\nUpLoading to Telegram",
+        ),
+    )
 
 
 async def upload_as_document(
