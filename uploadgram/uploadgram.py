@@ -13,39 +13,76 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
+import logging
 from pyrogram import Client, __version__
 from pyrogram.enums import ParseMode, ClientPlatform
-
 from .config import get_config
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 
 class Uploadgram(Client):
-    """modded client"""
+    """
+    A robust, scalable Telegram client based on Pyrogram for Uploadgram.
+    """
 
     def __init__(self):
-        super().__init__(
-            name="UploadGram",
-            api_id=int(get_config("UG_TG_APP_ID")),
-            api_hash=get_config("UG_TG_API_HASH"),
-            parse_mode=ParseMode.HTML,
-            sleep_threshold=int(get_config("UG_TG_ST", 10)),
-            workers=10,
-            max_concurrent_transmissions=4,
-            no_updates=True,
-            device_model="Samsung SM-G998B",
-            app_version="8.4.1 (2522)",
-            system_version="SDK 31",
-            lang_code="en",
-            client_platform=ClientPlatform.ANDROID
-        )
+        try:
+            api_id = int(get_config("UG_TG_APP_ID", 0))
+            api_hash = get_config("UG_TG_API_HASH", "")
+            sleep_threshold = int(get_config("UG_TG_ST", 10))
+
+            if not api_id or not api_hash:
+                raise ValueError("API credentials (UG_TG_APP_ID, UG_TG_API_HASH) are required.")
+
+            super().__init__(
+                name="UploadGram",
+                api_id=api_id,
+                api_hash=api_hash,
+                parse_mode=ParseMode.HTML,
+                sleep_threshold=sleep_threshold,
+                workers=10,
+                max_concurrent_transmissions=4,
+                no_updates=True,
+                device_model="Samsung SM-G998B",
+                app_version="8.4.1 (2522)",
+                system_version="SDK 31",
+                lang_code="en",
+                client_platform=ClientPlatform.ANDROID,
+            )
+
+            logging.info("Uploadgram Client initialized successfully.")
+        except Exception as e:
+            logging.error(f"Error initializing Uploadgram Client: {e}")
+            raise
 
     async def start(self):
-        await super().start()
-        usr_bot_me = self.me
-        print(
-            f"@{usr_bot_me.username} based on Pyrogram v{__version__} started."
-        )
+        """
+        Starts the client and logs successful startup with user details.
+        """
+        try:
+            await super().start()
+            if not self.me:
+                raise RuntimeError("Failed to fetch bot details. Ensure API credentials are correct.")
 
-    async def stop(self, *args):
-        await super().stop()
-        print("UploadGram stopped. Bye.")
+            logging.info(f"Client started: @{self.me.username} (Pyrogram v{__version__})")
+        except Exception as e:
+            logging.error(f"Failed to start Uploadgram Client: {e}")
+            raise
+        finally:
+            logging.info("Client startup attempt complete.")
+
+    async def stop(self):
+        """
+        Stops the client gracefully and logs the shutdown status.
+        """
+        try:
+            await super().stop()
+            logging.info("Uploadgram Client stopped successfully.")
+        except Exception as e:
+            logging.error(f"Error during client shutdown: {e}")
+            raise
