@@ -58,18 +58,18 @@ async def upload_dir_contents(
     ]
     dir_contents.sort(key=sort_key)
     _dir_len = len(dir_contents)
-    print(f"No of Contents on {os.path.basename(dir_path)}: {_dir_len}")
-    for idx, dir_cntn in enumerate(dir_contents, start=1):
-        if int(_dir_len) == 0:
+    
+    if _dir_len == 0:
             print("Skipping and removing empty directory")
             try:
                 print(f"Removing {dir_path}")
                 shutil.rmtree(dir_path)
             except Exception as err:
                 print(err)
-                
-            continue
-            
+            return
+        
+    print(f"No of Contents on {os.path.basename(dir_path)}: {_dir_len}")
+    for idx, dir_cntn in enumerate(dir_contents, start=1):
         current_name = os.path.join(dir_path, dir_cntn)
         if os.path.isdir(current_name):
             await upload_dir_contents(
